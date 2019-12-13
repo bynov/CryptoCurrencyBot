@@ -4,14 +4,28 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strings"
 	"time"
 )
 
 var errEmptyCoinName = errors.New("coin name is empty")
 
+type Code string
+
+func (c *Code) UnmarshalJSON(b []byte) error {
+	var s string
+	if err := json.Unmarshal(b, &s); err != nil {
+		return err
+	}
+
+	*c = Code(strings.ToUpper(s))
+
+	return nil
+}
+
 type Currency struct {
 	Name       string `json:"name"`
-	Code       string `json:"symbol"`
+	Code       Code   `json:"symbol"`
 	MarketData struct {
 		Price struct {
 			USD Number `json:"usd"`
